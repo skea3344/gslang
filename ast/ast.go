@@ -28,6 +28,7 @@ type Node interface {
 	Package() *Package
 	Attrs() []*Attr
 	AddAttr(attr *Attr)
+	AddAttrs(attr []*Attr)
 	RemoveAttr(attr *Attr)
 	NewExtra(name string, data interface{})
 	Extra(name string) (interface{}, bool)
