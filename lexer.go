@@ -268,7 +268,7 @@ func (lexer *Lexer) next() (token *Token, err error) {
 			} else { // 例如  (lang: 认为lang是一个标签,但是保存的value仅仅是lang,:被丢弃了,类型更改为TokenLABEL)
 				if lexer.curr == ':' {
 					token.Type = TokenLABEL
-					lexer.nextChar()
+					_ = lexer.nextChar()
 				}
 			}
 		}
@@ -395,7 +395,7 @@ func (lexer *Lexer) scanString(quote rune) (token *Token, err error) {
 		}
 		if lexer.curr == '\\' {
 			// 判断转义内容 \" \' 需要处理
-			lexer.scanEscape(&buff, quote)
+			_ = lexer.scanEscape(&buff, quote)
 		} else {
 			// 其余作为字符串内容写入
 			buff.WriteRune(lexer.curr)
@@ -447,14 +447,14 @@ func (lexer *Lexer) scanNum() (*Token, error) {
 	var buff bytes.Buffer
 	if lexer.curr == '0' {
 		buff.WriteRune(lexer.curr)
-		lexer.nextChar()
+		_ = lexer.nextChar()
 		// 判断是是不是十六进制数值
 		if lexer.curr == 'x' || lexer.curr == 'X' {
 			buff.WriteRune(lexer.curr)
-			lexer.nextChar()
+			_ = lexer.nextChar()
 			for digitVal(lexer.curr) < 16 {
 				buff.WriteRune(lexer.curr)
-				lexer.nextChar()
+				_ = lexer.nextChar()
 			}
 			if buff.Len() < 3 {
 				return nil, lexer.newerror("illegal hexadecimal num")
@@ -490,7 +490,7 @@ func (lexer *Lexer) scanNum() (*Token, error) {
 func (lexer *Lexer) scanMantissa(buff *bytes.Buffer) {
 	for isDecimal(lexer.curr) {
 		buff.WriteRune(lexer.curr)
-		lexer.nextChar()
+		_ = lexer.nextChar()
 	}
 }
 
@@ -498,7 +498,7 @@ func (lexer *Lexer) scanMantissa(buff *bytes.Buffer) {
 func (lexer *Lexer) scanFraction(buff *bytes.Buffer) {
 	if lexer.curr == '.' {
 		buff.WriteRune(lexer.curr)
-		lexer.nextChar()
+		_ = lexer.nextChar()
 		lexer.scanMantissa(buff)
 	}
 }
@@ -507,10 +507,10 @@ func (lexer *Lexer) scanFraction(buff *bytes.Buffer) {
 func (lexer *Lexer) scanExponent(buff *bytes.Buffer) {
 	if lexer.curr == 'e' || lexer.curr == 'E' {
 		buff.WriteRune(lexer.curr)
-		lexer.nextChar()
+		_ = lexer.nextChar()
 		if lexer.curr == '-' || lexer.curr == '+' {
 			buff.WriteRune(lexer.curr)
-			lexer.nextChar()
+			_ = lexer.nextChar()
 		}
 		lexer.scanMantissa(buff)
 	}

@@ -9,8 +9,8 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"math"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -61,25 +61,25 @@ func Comments(node ast.Node) []*Token {
 	return nil
 }
 
-// TokenCOMMENT类 栈  先进后出 注释栈
-type commentStack []*Token
+// // TokenCOMMENT类 栈  先进后出 注释栈
+// type commentStack []*Token
 
-// push 往 注释栈放入一条注释
-func (stack *commentStack) push(token *Token) {
-	gserrors.Require(token.Type == TokenCOMMENT, "require push comment token")
-	*stack = append(*stack, token)
-}
+// // push 往 注释栈放入一条注释
+// func (stack *commentStack) push(token *Token) {
+// 	gserrors.Require(token.Type == TokenCOMMENT, "require push comment token")
+// 	*stack = append(*stack, token)
+// }
 
-// pop 从注释栈取出一条注释Token TokenCOMMENT
-func (stack *commentStack) pop() (token *Token, ok bool) {
-	if len(*stack) == 0 {
-		return nil, false
-	}
-	token = (*stack)[len(*stack)-1]
-	*stack = (*stack)[:len(*stack)-1]
-	ok = true
-	return
-}
+// // pop 从注释栈取出一条注释Token TokenCOMMENT
+// func (stack *commentStack) pop() (token *Token, ok bool) {
+// 	if len(*stack) == 0 {
+// 		return nil, false
+// 	}
+// 	token = (*stack)[len(*stack)-1]
+// 	*stack = (*stack)[:len(*stack)-1]
+// 	ok = true
+// 	return
+// }
 
 // Parser 分析器
 type Parser struct {
@@ -114,10 +114,10 @@ func (parser *Parser) errorf(position Position, fmtstring string, args ...interf
 	gserrors.Panicf(ErrParse, fmt.Sprintf("parse %s error: %s", position, fmt.Sprintf(fmtstring, args...)))
 }
 
-// errorf2 在err基础上格式化报错
-func (parser *Parser) errorf2(err error, position Position, fmtstring string, args ...interface{}) {
-	gserrors.Panicf(err, fmt.Sprintf("parse %s error: %s", position, fmt.Sprintf(fmtstring, args...)))
-}
+// // errorf2 在err基础上格式化报错
+// func (parser *Parser) errorf2(err error, position Position, fmtstring string, args ...interface{}) {
+// 	gserrors.Panicf(err, fmt.Sprintf("parse %s error: %s", position, fmt.Sprintf(fmtstring, args...)))
+// }
 
 // expect 期望下一个Token的类型为目标rune expect,否则报错
 func (parser *Parser) expect(expect rune) *Token {
@@ -168,8 +168,8 @@ func (cs *CompileS) parse(pkg *ast.Package, path string) (*ast.Script, error) {
 	if err != nil {
 		return nil, err
 	}
-	// 读取整个文件内容到一个 字节切片 []byte
-	content, err := ioutil.ReadFile(path)
+	// 读取整个文件内容到一个字节切片 []byte
+	content, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}

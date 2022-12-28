@@ -9,8 +9,8 @@ import (
 	"bytes"
 	"fmt"
 
+	"github.com/skea3344/gserrors"
 	"github.com/skea3344/gslang/ast"
-	"github.com/skea3344/yf/platform/yferrors"
 )
 
 // link 编译器链接方法
@@ -215,14 +215,14 @@ func (linker *Linker) VisitTypeRef(ref *ast.TypeRef) ast.Node {
 	if ref.Ref == nil { // 引用表达式为空的时候 需要检查路径名字
 		// 路径长度需要大于1
 		nodes := len(ref.NamePath)
-		yferrors.Assert(nodes > 0, "the NamePath,can not be nil")
+		gserrors.Assert(nodes > 0, "the NamePath,can not be nil")
 		switch nodes { // 根据类型路径长度判断
 		case 1: // 长度为1 则NamePath[0]就是类型名
 			// 在代码节点引用的代码包中查找指定名字目标包
 			// 引用的包不能跟类型重名 如果有同名包则报错
 			if pkg, ok := ref.Script().Imports[ref.NamePath[0]]; !ok {
 				pkg := ref.Package() // 类型引用所属包 必须不为空
-				yferrors.Assert(pkg != nil, "ref(%s) must bind ast tree ", ref)
+				gserrors.Assert(pkg != nil, "ref(%s) must bind ast tree ", ref)
 				// 在包内类型列表中查找对应类型 添加引用
 				if expr, ok := pkg.Types[ref.NamePath[0]]; ok {
 					ref.Ref = expr
@@ -236,7 +236,7 @@ func (linker *Linker) VisitTypeRef(ref *ast.TypeRef) ast.Node {
 		case 2: // 路径长度为2  eg: ast.Node
 			// 在代码应用的包列表中查找NamePath[0],即目标类型所属的包
 			if pkg, ok := ref.Script().Imports[ref.NamePath[0]]; ok {
-				yferrors.Assert(pkg.Ref != nil,
+				gserrors.Assert(pkg.Ref != nil,
 					"(%s)first parse phase must link import package:%s",
 					ref.Script(), pkg)
 				// 在引用的包的类型列表中查找对应名字的类型并引用
@@ -397,28 +397,28 @@ func (linker *attrLinker) VisitPackage(pkg *ast.Package) ast.Node {
 		}
 	}
 	if linker.attrTarget == nil {
-		yferrors.Panicf(ErrCompileS,
+		gserrors.Panicf(ErrCompileS,
 			"inner error: can't found yflang.AttrTarge enum")
 	}
 	// 设置结构和枚举两种内置类型
 	if pkg.Name() == GSLangPackage {
 		linker.attrStruct = pkg.Types[GSLangAttrStruct]
 		if linker.attrStruct == nil {
-			yferrors.Panicf(ErrCompileS, "inner error: can't found yflang.Struct attribute type")
+			gserrors.Panicf(ErrCompileS, "inner error: can't found yflang.Struct attribute type")
 		}
 		linker.attrError = pkg.Types[GSLangAttrError]
 		if linker.attrError == nil {
-			yferrors.Panicf(ErrCompileS, "inner error: can't found yflang.Error attribute type")
+			gserrors.Panicf(ErrCompileS, "inner error: can't found yflang.Error attribute type")
 		}
 	} else {
 		attrStruct, err := linker.Type(GSLangPackage, GSLangAttrStruct)
 		if err != nil {
-			yferrors.Panicf(err, "inner error: can't found yflang.Struct attribute type")
+			gserrors.Panicf(err, "inner error: can't found yflang.Struct attribute type")
 		}
 		linker.attrStruct = attrStruct
 		attrError, err := linker.Type(GSLangPackage, GSLangAttrError)
 		if err != nil {
-			yferrors.Panicf(err, "inner error: can't found yflang.Error attribute type")
+			gserrors.Panicf(err, "inner error: can't found yflang.Error attribute type")
 		}
 		linker.attrError = attrError
 	}
